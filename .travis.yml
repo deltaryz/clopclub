@@ -8,7 +8,6 @@ before_install:
   - sudo apt-get install -qq sshpass
 
 script:
-  - export CGO_ENABLED=0 GOOS=linux GOARCH=arm
   - CGO_ENABLED=0 GOOS=linux GOARCH=arm go build clopclub.go
 
 after_success:
