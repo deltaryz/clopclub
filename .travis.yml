@@ -1,0 +1,23 @@
+language: go
+
+go:
+  - 1.8
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq sshpass
+  - export CGO_ENABLED=0 GOOS=linux GOARCH=arm
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    echo "Fixing hosts file...";
+    rm -rf ~/.ssh/known_hosts;
+    echo $KNOWN_HOST > ~/.ssh/known_hosts;
+    echo "Moving go binary to working folder...";
+    mv $HOME/gopath/bin/clopclubb ./;
+    echo "Pushing files to server...";
+    chmod +x restart-go.sh;
+    sshpass -p $RSYNC_PASSWORD rsync -r ./ cam@clop.club:/home/cam/web/;
+    echo "Restarting go script...";
+    sshpass -p $RSYNC_PASSWORD ssh cam@clop.club 'cd /home/cam/web && ./restart-go.sh';
+    fi
